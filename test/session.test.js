@@ -108,7 +108,7 @@ exports.SessionManagerTest = vows.describe('SessionManager class').addBatch( {
 		},
 		'should return destroy session if exists' : function(topic) {
 			/* Syntax passing session */
-			session = topic.create();
+			var session = topic.create();
 			assert.equal(topic.has(session.getId()), true);
 			topic.destroy(session);
 			assert.equal(topic.has(session.getId()), false);
