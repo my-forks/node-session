@@ -41,7 +41,7 @@ exports.SessionManagerTest = vows.describe('SessionManager class').addBatch( {
 		},
 		'should throw error if SID does not exists' : function(topic) {
 			assert.throws(function() {
-				topic.read('fldjslfkjdlks');
+				topic.read('fldjslfkjdlkjksdkls');
 			});
 		},
 		'should return Session object if SID exists' : function(topic) {
@@ -72,12 +72,7 @@ exports.SessionManagerTest = vows.describe('SessionManager class').addBatch( {
 			assert.notEqual(session, sessionOld);
 			assert.deepEqual(sessionOld.getData(), {});
 
-			/* First syntax */
-			topic.update(session.getId(), session.getData());
-			sessionNew = topic.read(session.getId());
-			assert.deepEqual(session.getData(), sessionNew.getData());
-
-			/* Second syntax */
+			/* Passing session as parameter */
 			session.set('foo', 'baz');
 			topic.update(session);
 			sessionNew = topic.read(session.getId());
@@ -85,7 +80,7 @@ exports.SessionManagerTest = vows.describe('SessionManager class').addBatch( {
 		},
 		'should return this' : function(topic) {
 			var session = topic.create();
-			assert.equal(topic.update(session.getId(), {}), topic);
+			assert.equal(topic.update(session, {}), topic);
 		}
 	},
 	"has() " : {
@@ -106,18 +101,21 @@ exports.SessionManagerTest = vows.describe('SessionManager class').addBatch( {
 		},
 		'should not send an error if SID does not exists' : function(topic) {
 			assert.doesNotThrow(function() {
-				topic.destroy('fsdfsd', {});
+				var session = topic.create();
+				session.id = 'fjdlskjfsdkl';
+				topic.destroy(session, {});
 			}, topic);
 		},
 		'should return destroy session if exists' : function(topic) {
-			var session = topic.create();
+			/* Syntax passing session */
+			session = topic.create();
 			assert.equal(topic.has(session.getId()), true);
-			topic.destroy(session.getId());
+			topic.destroy(session);
 			assert.equal(topic.has(session.getId()), false);
 		},
 		'should return this' : function(topic) {
 			var session = topic.create();
-			assert.equal(topic.destroy(session.getId()), topic);
+			assert.equal(topic.destroy(session), topic);
 		}
 	}
 
