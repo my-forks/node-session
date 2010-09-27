@@ -64,6 +64,14 @@ exports.SessionTest = vows.describe('Session class').addBatch( {
 		'should return set data' : function(topic) {
 			topic.set('myId', 'helloworld');
 			assert.equal(topic.get('myId'), 'helloworld');
+		},
+		'should return set many value if called as set({key: value, ...})' : function(topic) {
+			topic.set( {
+				myId : 'helloworld2',
+				key2 : 'lol'
+			});
+			assert.equal(topic.get('myId'), 'helloworld2');
+			assert.equal(topic.get('key2'), 'lol');
 		}
 	},
 	"isset() " : {
