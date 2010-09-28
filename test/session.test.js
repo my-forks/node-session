@@ -22,7 +22,7 @@ function Manager(options) {
 	options = options || {};
 	options.debug = options.debug == undefined ? true : options.debug;
 	options.expiration = TIME_EXPIRE;
-	var manager = new session.SessionManager(options);
+	var manager = new session.Manager(options);
 	manager._getTime = getTime;// to test expiration time
 	return manager;
 }
