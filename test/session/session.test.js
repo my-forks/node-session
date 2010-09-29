@@ -23,15 +23,18 @@ function Manager(options) {
 	options.debug = options.debug == undefined ? true : options.debug;
 	options.expiration = TIME_EXPIRE;
 	var manager = new session.Manager(options);
-	manager._getTime = getTime;// to test expiration time
+	manager.__defineGetter__('_currentTime', getTime);// to test expiration time
 	return manager;
 }
 
 function Session(options) {
 	options = options || {};
+	options.manager = options.manager || {};
 	options.debug = options.debug == undefined ? true : options.debug;
+
+	options.manager = Manager(options.manager);
 	var sessionNew = new session.Session(options);
-	sessionNew._getTime = getTime;// to test expiration time
+	sessionNew.__defineGetter__('_currentTime', getTime);// to test expiration time
 	return sessionNew;
 }
 
@@ -151,6 +154,11 @@ exports.ManagerTest = vows.describe('Manager class').addBatch( {
 		topic : function(item) {// Topic
 			return Manager();
 		},
+		'should generate SID with length 32bytes(chars).' : function(topic) {
+			for ( var i = 0; i < 10000; i++) {
+				assert.equal(topic.generateId().length, 32);
+			}
+		},
 		'should generate distinct SID.' : function(topic) {
 			var listId = [];
 			var sid;
@@ -164,6 +172,16 @@ exports.ManagerTest = vows.describe('Manager class').addBatch( {
 	"create()" : {
 		topic : function(item) {// Topic
 			return Manager();
+		},
+		'should throw error if cannot create' : function(topic) {
+			var oldGenerateId = topic.generateId;
+			topic.generateId = function() {
+				return '123456789';
+			};
+			assert.throws(function() {
+				var sessionNew = manager.create();
+			});
+			topic.generateId = oldGenerateId;
 		},
 		'should return a new session' : function(topic) {
 			var sessionNew = topic.create();
@@ -200,7 +218,7 @@ exports.ManagerTest = vows.describe('Manager class').addBatch( {
 			var session = topic.create();
 			assert.equal(topic.exist(session.getId()), true);
 		},
-		'should return true if Session has expired' : function(topic) {// TODO return true OR false and auto detroy session what is the best?
+		'should return true if Session has expired' : function(topic) {// TODO return true OR false and auto destroy session what is the best?
 			var session = topic.create();
 			setTime(session.expireAt + 1);
 			assert.equal(topic.exist(session.getId()), true);
@@ -210,18 +228,23 @@ exports.ManagerTest = vows.describe('Manager class').addBatch( {
 		topic : function(item) {// Topic
 			return Manager();
 		},
-		'should throw error if SID does not exists' : function(topic) {
-			assert.throws(function() {
-				var sessionOpened = topic.open('fldjslfkjdlkjksdkls');
-			});
+		'should set new SID if SID does not exists' : function(topic) {
+			var sid = 'fldjslfkjdlkjksdkls';
+			var sessionOpened = topic.open(sid);
+			sessionOpened.read();
+			assert.notEqual(sessionOpened.getId(), sid);
 		},
-		'should throw error if Session has expired' : function(topic) {
+		'should set new SID if Session has expired' : function(topic) {
 			var sessionNew = topic.create();
+			var sid = sessionNew.getId();
+			sessionNew.set('foo', 1);
+			sessionNew.save();
+
 			setTime(sessionNew.expiredAt + 1);
 
-			assert.throws(function() {
-				var sessionOpened = topic.open(sessionNew.getId());
-			});
+			var sessionOpened = topic.open(sid);
+			sessionOpened.read();
+			assert.notEqual(sessionOpened.getId(), sid);
 		},
 		'should return Session object if SID exists' : function(topic) {
 			var sessionNew = topic.create();
@@ -263,16 +286,7 @@ exports.ManagerTest = vows.describe('Manager class').addBatch( {
 			sessionOpened.save();
 			assert.equal(sessionOpened.accessedAt, getTime());
 			assert.equal(sessionOpened.expiredAt, getTime() + TIME_EXPIRE);
-		},
-		'should postpone accessed and expiration time' : function(topic) {
-			var sessionNew = topic.create();
-			addTime();
-
-			var sessionOpened = topic.open(sessionNew.getId());
-			assert.equal(sessionOpened.accessedAt, getTime());
-			assert.equal(sessionOpened.expiredAt, getTime() + TIME_EXPIRE);
 		}
-
 	},
 	"destroy()" : {
 		topic : function(item) {// Topic
