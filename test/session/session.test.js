@@ -1,6 +1,6 @@
 var vows = require('vows');
 var assert = require('assert');
-var session = require('../lib/session');
+var session = require('../../lib/session');
 
 var TIME_ORIGIN = 1;
 var TIME_CURRENT = 1;
@@ -99,13 +99,54 @@ exports.SessionTest = vows.describe('Session class').addBatch( {
 			topic.unset('myId');
 			assert.equal(topic.isset('myId'), false);
 		}
+	},
+	"pop()" : {
+		topic : function(item) {
+			return Session();
+		},
+		'should return default param if key does not exist' : function(topic) {
+			assert.equal(topic.pop('jakhhk', 'defaultValue'), 'defaultValue');
+		},
+		'should delete element and return this element' : function(topic) {
+			topic.set('myId', 'helloworld');
+			assert.equal(topic.isset('myId'), true);
+			var result = topic.pop('myId', 'defaultValue');
+			assert.equal(topic.isset('myId'), false);
+			assert.equal(result, 'helloworld');
+		}
+	},
+	"keys()" : {
+		topic : function(item) {
+			return Session();
+		},
+		'should return array containing all data keys' : function(topic) {
+			topic.set('foo', 1);
+			assert.deepEqual(topic.keys(), [ 'foo' ]);
+			topic.set('bar', 2);
+			assert.deepEqual(topic.keys(), [ 'foo', 'bar' ]);
+			topic.unset('foo');
+			assert.deepEqual(topic.keys(), [ 'bar' ]);
+		}
+	},
+	"values()" : {
+		topic : function(item) {
+			return Session();
+		},
+		'should return array containing all data keys' : function(topic) {
+			topic.set('foo', 1);
+			assert.deepEqual(topic.values(), [ 1 ]);
+			topic.set('bar', 2);
+			assert.deepEqual(topic.values(), [ 1, 2 ]);
+			topic.unset('foo');
+			assert.deepEqual(topic.values(), [ 2 ]);
+		}
 	}
 });
 
 /**
- * SessionManager Test class
+ * Manager Test class
  */
-exports.SessionManagerTest = vows.describe('SessionManager class').addBatch( {
+exports.ManagerTest = vows.describe('Manager class').addBatch( {
 	"generateId()" : {
 		topic : function(item) {// Topic
 			return Manager();
@@ -128,7 +169,7 @@ exports.SessionManagerTest = vows.describe('SessionManager class').addBatch( {
 			var sessionNew = topic.create();
 			assert.notEqual(sessionNew, undefined);
 			assert.notEqual(sessionNew.getId(), undefined);
-			assert.deepEqual(sessionNew.getData(), {});
+			assert.deepEqual(sessionNew._getData(), {});
 		},
 		'should generate distinct SID.' : function(topic) {
 			var listId = [];
@@ -188,7 +229,7 @@ exports.SessionManagerTest = vows.describe('SessionManager class').addBatch( {
 			var sessionOpened = topic.open(sessionNew.getId());
 			assert.notEqual(sessionOpened, undefined);
 			assert.equal(sessionOpened.getId(), sessionNew.getId());
-			assert.deepEqual(sessionOpened.getData(), sessionNew.getData());
+			assert.deepEqual(sessionOpened._getData(), sessionNew._getData());
 
 			assert.equal(sessionOpened.createdAt, sessionNew.createdAt);
 			assert.equal(sessionOpened.accessedAt, sessionNew.accessedAt);
