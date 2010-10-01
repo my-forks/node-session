@@ -1,6 +1,6 @@
 {
   "name" : "session",
-  "version" : "0.1",
+  "version" : "0.1.0",
   "author" : "Julien Polo <julien.polo@altshift.fr>",
   "description" : "Generic session manager (i.e. not depending on cookies or socket connection, etc.)",
   "keywords" : ["session", "generic", "manager"],
