@@ -123,6 +123,7 @@ exports.SessionTest = vows.describe('Session class').addBatch( {
 			return Session();
 		},
 		'should return array containing all data keys' : function(topic) {
+			assert.deepEqual(topic.keys(), []);
 			topic.set('foo', 1);
 			assert.deepEqual(topic.keys(), [ 'foo' ]);
 			topic.set('bar', 2);
@@ -136,6 +137,7 @@ exports.SessionTest = vows.describe('Session class').addBatch( {
 			return Session();
 		},
 		'should return array containing all data keys' : function(topic) {
+			assert.deepEqual(topic.values(), []);
 			topic.set('foo', 1);
 			assert.deepEqual(topic.values(), [ 1 ]);
 			topic.set('bar', 2);
