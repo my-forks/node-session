@@ -23,7 +23,8 @@ function Manager(options) {
 	options.debug = options.debug == undefined ? true : options.debug;
 	options.expiration = TIME_EXPIRE;
 	var manager = new session.Manager(options);
-	manager.__defineGetter__('_currentTime', getTime);// to test expiration time
+	manager.__defineGetter__('_currentTime', getTime);// to test expiration
+	// time
 	return manager;
 }
 
@@ -34,7 +35,8 @@ function Session(options) {
 
 	options.manager = Manager(options.manager);
 	var sessionNew = new session.Session(options);
-	sessionNew.__defineGetter__('_currentTime', getTime);// to test expiration time
+	sessionNew.__defineGetter__('_currentTime', getTime);// to test
+	// expiration time
 	return sessionNew;
 }
 
@@ -90,30 +92,16 @@ exports.SessionTest = vows.describe('Session class').addBatch( {
 		}
 	},
 	"unset()" : {
-		topic : function(item) {// Topic
-			return Session();
-		},
-		'should return this' : function(topic) {
-			assert.equal(topic.unset('jakhhk', {}), topic);
-		},
-		'should delete element if existing' : function(topic) {
-			topic.set('myId', 'helloworld');
-			assert.equal(topic.isset('myId'), true);
-			topic.unset('myId');
-			assert.equal(topic.isset('myId'), false);
-		}
-	},
-	"pop()" : {
 		topic : function(item) {
 			return Session();
 		},
 		'should return default param if key does not exist' : function(topic) {
-			assert.equal(topic.pop('jakhhk', 'defaultValue'), 'defaultValue');
+			assert.equal(topic.unset('jakhhk', 'defaultValue'), 'defaultValue');
 		},
 		'should delete element and return this element' : function(topic) {
 			topic.set('myId', 'helloworld');
 			assert.equal(topic.isset('myId'), true);
-			var result = topic.pop('myId', 'defaultValue');
+			var result = topic.unset('myId', 'defaultValue');
 			assert.equal(topic.isset('myId'), false);
 			assert.equal(result, 'helloworld');
 		}
@@ -123,7 +111,6 @@ exports.SessionTest = vows.describe('Session class').addBatch( {
 			return Session();
 		},
 		'should return array containing all data keys' : function(topic) {
-			assert.deepEqual(topic.keys(), []);
 			topic.set('foo', 1);
 			assert.deepEqual(topic.keys(), [ 'foo' ]);
 			topic.set('bar', 2);
@@ -137,7 +124,6 @@ exports.SessionTest = vows.describe('Session class').addBatch( {
 			return Session();
 		},
 		'should return array containing all data keys' : function(topic) {
-			assert.deepEqual(topic.values(), []);
 			topic.set('foo', 1);
 			assert.deepEqual(topic.values(), [ 1 ]);
 			topic.set('bar', 2);
@@ -220,11 +206,18 @@ exports.ManagerTest = vows.describe('Manager class').addBatch( {
 			var session = topic.create();
 			assert.equal(topic.exist(session.getId()), true);
 		},
-		'should return true if Session has expired' : function(topic) {// TODO return true OR false and auto destroy session what is the best?
-			var session = topic.create();
-			setTime(session.expireAt + 1);
-			assert.equal(topic.exist(session.getId()), true);
-		}
+		'should return true if Session has expired' : function(topic) {// TODO
+																		// return
+																		// true
+																		// OR
+																		// false
+																		// and
+																		// auto
+			// destroy session what is the best?
+		var session = topic.create();
+		setTime(session.expireAt + 1);
+		assert.equal(topic.exist(session.getId()), true);
+	}
 	},
 	"open()" : {
 		topic : function(item) {// Topic
