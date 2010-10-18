@@ -207,13 +207,13 @@ exports.ManagerTest = vows.describe('Manager class').addBatch( {
 			assert.equal(topic.exist(session.getId()), true);
 		},
 		'should return true if Session has expired' : function(topic) {// TODO
-																		// return
-																		// true
-																		// OR
-																		// false
-																		// and
-																		// auto
-			// destroy session what is the best?
+			// return
+		// true
+		// OR
+		// false
+		// and
+		// auto
+		// remove session what is the best?
 		var session = topic.create();
 		setTime(session.expireAt + 1);
 		assert.equal(topic.exist(session.getId()), true);
@@ -283,7 +283,7 @@ exports.ManagerTest = vows.describe('Manager class').addBatch( {
 			assert.equal(sessionOpened.expiredAt, getTime() + TIME_EXPIRE);
 		}
 	},
-	"destroy()" : {
+	"remove()" : {
 		topic : function(item) {// Topic
 			return Manager();
 		},
@@ -291,18 +291,18 @@ exports.ManagerTest = vows.describe('Manager class').addBatch( {
 			assert.doesNotThrow(function() {
 				var session = topic.create();
 				session.id = 'fjdlskjfsdkl';
-				topic.destroy(session, {});
+				topic.remove(session, {});
 			}, topic);
 		},
-		'should return destroy session if exists' : function(topic) {
+		'should return remove session if exists' : function(topic) {
 			var session = topic.create();
 			assert.equal(topic.exist(session.getId()), true);
-			topic.destroy(session);
+			topic.remove(session);
 			assert.equal(topic.exist(session.getId()), false);
 		},
 		'should return this' : function(topic) {
 			var session = topic.create();
-			assert.equal(topic.destroy(session), topic);
+			assert.equal(topic.remove(session), topic);
 		}
 	},
 	"flush()" : {
@@ -314,7 +314,7 @@ exports.ManagerTest = vows.describe('Manager class').addBatch( {
 				topic.flush();
 			}, topic);
 		},
-		'should destroy all sessions' : function(topic) {
+		'should remove all sessions' : function(topic) {
 			var sessions = [];
 			for ( var i = 0; i < 100; i++) {
 				var sessionCreated = topic.create();
@@ -336,7 +336,7 @@ exports.ManagerTest = vows.describe('Manager class').addBatch( {
 				topic.clean();
 			}, topic);
 		},
-		'should destroy all expired sessions' : function(topic) {
+		'should remove all expired sessions' : function(topic) {
 			var sessions = [];
 			var sessionsExpired = [];
 			for ( var i = 0; i < 100; i++) {

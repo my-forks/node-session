@@ -26,9 +26,9 @@ var jsonMd5 = require('crypto').createHash('md5').update(jsonData).digest('hex')
 /**
  * Session class
  */
-var methodsAbstract = [ 'exist', 'create', 'update', 'destroy', 'flush', 'clean' ];
+var methodsAbstract = [ 'exist', 'create', 'update', 'remove', 'flush', 'clean' ];
 exports.StorageTest = vows.describe('Base class').addBatch( {
-	"exist(), 'create(), 'update(), 'destroy(), flush(), clean()" : {
+	"exist(), 'create(), 'update(), 'remove(), flush(), clean()" : {
 		topic : function(item) {// Topic
 			return Storage();
 		},
@@ -63,9 +63,9 @@ exports.StorageTest = vows.describe('Base class').addBatch( {
 		'should throw error for wrong MD5 check' : function(topic) {
 			var base = 16;
 			var jsonMd5Wrong = (parseInt(jsonMd5[0], base) + 1 % base).toString(16) + jsonMd5.substr(1);// just
-																										// increment
-																										// first
-																										// char
+		// increment
+		// first
+		// char
 
 		assert.throws(function() {
 			topic.decode(jsonData + jsonMd5Wrong);
