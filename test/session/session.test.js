@@ -20,7 +20,7 @@ function addTime(time) {
 
 function Manager(options) {
 	options = options || {};
-	options.debug = options.debug == undefined ? true : options.debug;
+	options.debug = options.debug === undefined ? true : options.debug;
 	options.expiration = TIME_EXPIRE;
 	var manager = new session.Manager(options);
 	manager.__defineGetter__('_currentTime', getTime);// to test expiration
@@ -31,7 +31,7 @@ function Manager(options) {
 function Session(options) {
 	options = options || {};
 	options.manager = options.manager || {};
-	options.debug = options.debug == undefined ? true : options.debug;
+	options.debug = options.debug === undefined ? true : options.debug;
 
 	options.manager = Manager(options.manager);
 	var sessionNew = new session.Session(options);
