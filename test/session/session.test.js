@@ -161,23 +161,23 @@ exports.ManagerTest = vows.describe('Manager class').addBatch( {
 		topic : function(item) {// Topic
 			return Manager();
 		},
-		'should throw error if cannot create' : function(topic) {
+		'should throw error if cannot create': function(topic) {
 			var oldGenerateId = topic.generateId;
 			topic.generateId = function() {
 				return '123456789';
 			};
-			assert.throws(function() {
+			assert['throws'](function() {
 				var sessionNew = manager.create();
 			});
 			topic.generateId = oldGenerateId;
 		},
-		'should return a new session' : function(topic) {
+		'should return a new session': function(topic) {
 			var sessionNew = topic.create();
 			assert.notEqual(sessionNew, undefined);
 			assert.notEqual(sessionNew.getId(), undefined);
 			assert.deepEqual(sessionNew._getData(), {});
 		},
-		'should generate distinct SID.' : function(topic) {
+		'should generate distinct SID.': function(topic) {
 			var listId = [];
 			for (i = 0; i < 1000; i++) {
 				var session;
